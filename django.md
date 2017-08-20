@@ -249,19 +249,193 @@
     ```
 
 13. ```
-
+    class Post(models.Model):
+    	class Meta:
+    		ordering = ["-created_time"]
     ```
 
 14. ```
-
+    #Ngnix/Fabric
     ```
 
 15. ```
-
+    #生成摘要
+    复写save
+    class Post(models.Model):
+    	excerpt = models.CharField(max_length=200, blank=True)
+    	
+    	def save(self, *args, **kwargs):
+    		if not self.excerpt:
+    			md = ...
+    			self.excerpt = strip_tags(md.convert(self.body))[:54]
+    		super(Post, self).save(*args, **kwargs)
     ```
 
 16. ```
+    #基于类的通用视图ListView,DetailView
+    from django.views.generic import ListView
+    class IndexView(ListView):
+    	model = Post
+    	template_name = 'blog/index.html'
+    	context_object_name = 'post_list'
+    	
+    urlpatterns = [
+      url(r'^$', views.IndexView.as_view(), name="index"),
+    ]
+
+    class PostDetailView(DetailView):
+    	model = Post
+    	template_name = 'blog/detail.html'
+    	context_object_name = 'post'
+    	
+    	def get(self, request, *args, **kwargs):
+    		response = super(PostDetailView, self).get(request, *args, **kwargs)
+    		self.object.increase_views()
+    		return response
+    		
+    	def get_object(self, queryset=None):
+    		post = super(PostDetailView, self).get_object(queryset=None)
+    		post.body = markdown....
+    		return post
+            
+    	def get_context_data(self, **kwargs):
+    		context = super(PostDetailView, self).get_context_data(**kwargs)
+    		form = CommentForm()
+    		comment_list = self.object.comment_set.all()
+    		context.update({
+              'form': form,
+              'comment_list': comment_list
+    		})
+    		return context
+    ```
+
+17. ```
+    #分页
+    1)
+    class IndexView(ListView):
+    	paginate_by = 10
+    	...
+    2)
+    templates/blog/index.html
+    {% if is_paginated %}
+    <div class="pagination-simple">
+      <!-- 如果当前页还有上一页，显示一个上一页的按钮 -->
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
+      {% endif %}
+      <!-- 显示当前页面信息 -->
+      <span class="current">第 {{ page_obj.number }} 页 / 共 {{ paginator.num_pages }} 页</span>
+      <!-- 如果当前页还有下一页，显示一个下一页的按钮 -->
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">下一页</a>
+      {% endif %}
+    </div>
+    {% endif %}
+    ```
+
+18. ```
+    #聚合
+    from django.db.model.aggregates import Count
+
+    @register.simple_tag
+    def get_categories():
+    	return Category.objects.annotate(num_posts=Count('post')).filter(num_posts__gt=0)
+    ```
+
+19. ```
+    #目录
+    class PostDetailView(DetailView):
+    	model = Post
+    	template_name = 'blog/detail.html'
+    	...
+    	def get_object(self, queryset=None):
+    		...
+    		md = markdown.Markdown(
+    			extensions=['markdown.extensions.extra',
+    						'markdown.extensions.codehilite',
+    						 TocExtension(slugify=slugify),
+    		)]
+    		post.body = md.convert(post.body)
+    		post.toc = md.toc
+    		return post
+    		
+    <h3 class="">
+    	{{ post.toc | safe }}
+    </h3>
+    ```
+
+20. ```
+    #全文搜索
+    1）pip install whoosh django-haystack jieba
+    2）
+    blogproject/settings.py
+
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        # 其它 app...
+        'haystack',
+        'blog',
+        'comments',
+    ]
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'blog.whoosh_cn_backend.WhooshEngine',
+            'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+        },
+    }
+    HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+    3）
+    from haystack import indexes
+    from .models import Post
+    class PostIndex(indexes.SearchIndex, indexes.Indexable):
+        text = indexes.CharField(document=True, use_template=True)
+        def get_model(self):
+            return Post
+        def index_queryset(self, using=None):
+            return self.get_model().objects.all()
+    4）
+    templates/search/indexes/blog/post_text.txt
+    {{ object.title }}
+    {{ object.body }}
+    5）
+    blogproject/urls.py
+
+    urlpatterns = [
+        # 其它...
+        url(r'^search/', include('haystack.urls')),
+    ]
+    6）
+    <form role="search" method="get" id="searchform" action="{% url 'haystack_search' %}">
+      <input type="search" name="q" placeholder="搜索" required>
+      <button type="submit"><span class="ion-ios-search-strong"></span></button>
+    </form>
+    7）search.html
+    8）支持高亮搜索
+    base.html
+
+    <head>
+        <title>Black &amp; White</title>
+        ...
+        <style>
+            span.highlighted {
+                color: red;
+            }
+        </style>
+        ...
+    </head>
+    9)支持中文搜索
+    from jieba.analyse import ChineseAnalyzer
+    ...
+    #注意先找到这个再修改，而不是直接添加  
+    schema_fields[field_class.index_fieldname] = TEXT(stored=True, analyzer=ChineseAnalyzer(),field_boost=field_class.boost, sortable=True)
+    10）建立索引
+    python manage.py rebuild_index
+    ```
+
+21. ```
 
     ```
 
-17. ​
+22. ​
