@@ -108,3 +108,50 @@ words = ["This", "is", "a", "dog"]
 words.sort(key=lambda x:x.lower())
 print(words)
 
+#21.
+lists = ["xyz", "abc", "opq"]
+lists.sort(key=lambda x:x[1], reverse=True)
+print(lists)
+
+#22.解析argv
+import sys
+for arg in sys.argv[1:]:
+	print(arg)
+
+#装饰器
+class Array:
+	__list = []
+
+	def __init__(self):
+		print("constructor")
+
+	def __del__(self):
+		print("destructor")
+
+	def __str__(self):
+		return "this self-defined array class"
+
+	def __getitem__(self, key):
+		return self.__list[key]
+
+	def __len__(self):
+		return len(self.__list)
+
+	def Add(self, value):
+		self.__list.append(value)
+
+	def Remove(self, index):
+		del self.__list[index]
+
+	def DisplayItems(self):
+		for item in self.__list:
+			print(item)
+
+a = Array()
+a.Add(1)
+a.Add(3)
+a.DisplayItems()
+print(len(a))
+print(a)
+a.Remove(1)
+a.DisplayItems()
