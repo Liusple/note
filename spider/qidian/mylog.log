@@ -1,0 +1,20 @@
+2017-09-19 22:20:49,018 DEBUG    lius       hello        
+
+2017-09-19 22:20:49,018 INFO     lius       info         
+
+2017-09-19 22:20:49,019 WARNING  lius       warn         
+
+2017-09-19 22:20:49,019 ERROR    lius       error        
+
+2017-09-19 22:20:49,020 CRITICAL lius       critical     
+
+2017-09-19 22:21:57,003 DEBUG    lius       hello        
+
+2017-09-19 22:21:57,004 INFO     lius       info         
+
+2017-09-19 22:21:57,004 WARNING  lius       warn         
+
+2017-09-19 22:21:57,005 ERROR    lius       error        
+
+2017-09-19 22:21:57,005 CRITICAL lius       critical     
+
