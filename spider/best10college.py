@@ -5,7 +5,9 @@ import bs4
 def getHtmlText(url):
 	try:
 		r = requests.get(url, timeout = 30)
+		#抛异常
 		r.raise_for_status()
+		#s设置编码
 		r.encoding = r.apparent_encoding
 		#print(r.text)
 		return r.text
@@ -32,4 +34,5 @@ def main():
 	html = getHtmlText(url)
 	fillUnivList(uinfo, html)
 	printUnivList(uinfo, 10)
+
 main()
