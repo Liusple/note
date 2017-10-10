@@ -99,10 +99,10 @@
    ```
 
 10. ```python
-    #排序
-    l=[{"name":"alex", "age":20}, {"name":"king", "age":18}, {"name":"kate", "age":17}]
-    l.sort(key=lambda x:x["name"], reverse=True)
-    ```
+   #排序
+   l=[{"name":"alex", "age":20}, {"name":"king", "age":18}, {"name":"kate", "age":17}]
+   l.sort(key=lambda x:x["name"], reverse=True)
+   ```
 
 11. ```python
     1）
@@ -208,16 +208,36 @@
     T.add()
     t.fun()
     T.fun()
+
+    class Tool:
+        num = 0
+        def __init__(self):
+            Tool.num += 1
     ```
 
 20. ```python
     #__new__ 创建对象是被调用
+    class Dog(object):
+        def __init__(self):
+            print("__init__")
+        def __new__(cls):
+            return object.__new__(cls)
+    lucky = Dog()  #new返回了一个对象给init           
     #单例
+    class Dog(object):
+        __instance = None
+        def __new__(cls):
+            if cls.__instance:
+                return cls.__instance
+           	else:
+                cls.__instance = object.__new__(cls)
+                return cls.__instance
+        
     ```
 
 21.  ```python
     __all__=["", ""] #限制导入
-     ```
+    ```
 
 22. ```python
     [i for i in range(3) for j in range(2)] #[0, 0, 1, 1, 2, 2]
@@ -241,13 +261,11 @@
     b=[3,4]
     c=[a,b]
     d=copy.deepcopy(c) #会递归拷贝
-    #print(c)和print(d)不等
     print(id(c))
     print(id(d))
     #print(id(c[0]))和print(id(d[0]))不等
     print(id(c[0]))
     print(id(d[0]))
-
 
     a=[1,2]
     b=[3,4]
@@ -264,8 +282,11 @@
     print(id(d))
     ```
 
+
+
+
 25. ```python
-    __slots__ #限制给类添加属性
+    __slots__ = ("name", "age")#限制给类添加属性
     ```
 
 26. ```python
@@ -304,13 +325,15 @@
 
     Student.test_static = test_static
     Student.test_class = test_class
-
-
     ```
+
+
 
 29. ```python
     #property
     class User():
+        def __init__(self):
+            self.__age = 19
     	@property
     	def age(self):
     		return self.__age
@@ -324,16 +347,16 @@
     class T():
         def __init__(self):
             self.__num = 10
-
-
     t = T()
     t.__num = 100   #相当于给T增加了一个__num属性
     print(t.__num)  #100
-
     ```
 
+
+
+
 31. ```python
-    #同用装饰器
+    #通用装饰器
     import functools
     def log(tag=None):
         def decorator(func):
@@ -348,9 +371,105 @@
     def run(*args, **kwarg):
         print("run")
 
-
     run()
     print(run.__name__)
     ```
 
+
 32. ​
+
+```
+1)
+def counter(start=0):
+	count = [start]
+	def incr():
+		count[0] += 1
+		return count[0]
+	return incr
+c1 = counter(4)
+print(c1())
+
+2)
+def counter(start=0):
+	def incr():
+		nonlocal start
+		start += 1
+		return start
+	return incr
+c1 = counter(5)
+print(c1())
+```
+
+33.
+
+```
+class CarStore(object):
+	def __init__(self):
+		self.factory = Factory()
+	def order(self, type):
+		return self.factory.select_car_by_type(type)
+		
+class Factory(object):
+	def select_car_by_type(type):
+		if type = "":
+			return 
+		
+carStore = CarStore()
+car = carStore.order("")
+```
+
+34.
+
+```python
+def w1(func):
+    print("w1")
+    def inner():
+        print("in w1")
+        func()
+   	return inner
+
+def w2(func):
+    print("w2")
+    def inner():
+        print("in w2")
+        func()
+    return inner
+
+@w1
+@w2
+def log():
+    print("in log")
+    
+#output
+w2
+w1
+in w1
+in w2
+in log
+```
+
+35.
+
+```python
+def f1():
+	while True:
+        print("f1")
+       	yield 1
+def f2():
+    while True:
+        print("f2")
+        yield 2
+ 
+while True:
+    f1().__next__()
+    f2().__next__()
+```
+
+36.
+
+```
+_num = 20 
+from sth import * # _num无法被导入
+import sth        # sth._num可以使用
+```
+

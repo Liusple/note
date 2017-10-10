@@ -562,4 +562,4 @@ print("\n")
 #54.
 data = ['1', '2', '3']
 print(sum(int(i) for i in data))
-print(reduce(lambda x,y:x+int(y), data))
+print(reduce(lambda x,y:int(x)+int(y), data))
