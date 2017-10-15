@@ -50,5 +50,45 @@ sudo apt-get install vim
 
 8.ssh 
 sudo apt-get install openssh-server
+
+9.sublime
+http://blog.csdn.net/nanfangvec/article/details/54835119
+1)解决中文：
+sudo apt install git
+git clone https://github.com/lyfeyaj/sublime-text-imfix.git
+cd sublime-text-imfix
+./sublime-imfix
+2)模块代码自动补全
+Anaconda.sublime-settings添加：
+"extra_paths":
+[
+"/usr/local/lib/python2.7/dist-packages/"
+],
+```
+
+2017.10.15
+
+```
+1. tail -f log
+2. redis
+sudo apt-get install redis-server
+ps -aux | grep redis 查看redis进程
+ps -ef | grep redis
+netstat -nlt | grep 6379 
+sudo /ect/init.d/redis-server status 查看状态
+
+3. mysql
+安装：http://www.linuxidc.com/Linux/2017-05/143861.htm
+mysql -u root -p时报错：
+mysql: [ERROR] Found option without preceding group in config file /etc/mysql/my.cnf at line 22!
+mysql: [ERROR] Fatal error in defaults handling. Program aborted!
+方法：修改/etc/mysql/my.cnf
+链接：https://stackoverflow.com/questions/8020297/mysql-my-cnf-file-found-option-without-preceding-group
+命令：
+service mysql start/stop
+sudo netstat -tap | grep mysql
+mysql -u root -p 
+4.sublime快捷键:
+ctrl + L 选中一行
 ```
 
