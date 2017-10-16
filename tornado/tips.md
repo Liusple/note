@@ -92,3 +92,23 @@ mysql -u root -p
 ctrl + L 选中一行
 ```
 
+2017.10.16
+
+```
+1.
+问题：
+Traceback (most recent call last):
+  File "server.py", line 3, in <module>
+    import torndb
+  File "/home/liusple/.virtualenvs/py2_tornado/local/lib/python2.7/site-packages/torndb.py", line 33, in <module>
+    import MySQLdb.constants
+解决：
+pip install torndb
+pip install mysql-python
+2.pip install redis
+3.
+ImportError: No module named PIL
+pip install image 
+4.tornado 405错误 原因可能是url不正确
+```
+
